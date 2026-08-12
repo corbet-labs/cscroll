@@ -27,6 +27,7 @@
 struct sway_transaction {
 	struct wl_event_source *timer;
 	list_t *instructions;   // struct sway_transaction_instruction *
+	list_t *workspaces;     // struct sway_workspace * that were dirty for this transaction
 	size_t num_waiting;
 	size_t num_configures;
 	struct timespec commit_time;
@@ -54,6 +55,7 @@ static struct sway_transaction *transaction_create(void) {
 		return NULL;
 	}
 	transaction->instructions = create_list();
+	transaction->workspaces = create_list();
 	return transaction;
 }
 
@@ -88,6 +90,7 @@ void transaction_destroy(struct sway_transaction *transaction) {
 		free(instruction);
 	}
 	list_free(transaction->instructions);
+	list_free(transaction->workspaces);
 
 	if (transaction->timer) {
 		wl_event_source_remove(transaction->timer);
@@ -186,6 +189,13 @@ static void copy_layer_popup_state(struct sway_layer_popup *popup,
 	memcpy(state, &popup->pending, sizeof(struct sway_layer_surface_state));
 }
 
+static void transaction_add_workspace(struct sway_transaction *transaction,
+		struct sway_workspace *workspace) {
+	if (workspace && list_find(transaction->workspaces, workspace) == -1) {
+		list_add(transaction->workspaces, workspace);
+	}
+}
+
 static void transaction_add_node(struct sway_transaction *transaction,
 		struct sway_node *node, bool server_request) {
 	struct sway_transaction_instruction *instruction = NULL;
@@ -225,9 +235,14 @@ static void transaction_add_node(struct sway_transaction *transaction,
 		copy_output_state(node->sway_output, instruction);
 		break;
 	case N_WORKSPACE:
+		transaction_add_workspace(transaction, node->sway_workspace);
 		copy_workspace_state(node->sway_workspace, instruction);
 		break;
 	case N_CONTAINER:
+		transaction_add_workspace(transaction,
+			node->sway_container->current.workspace);
+		transaction_add_workspace(transaction,
+			node->sway_container->pending.workspace);
 		copy_container_state(node->sway_container, instruction);
 		break;
 	case N_LAYER_SURFACE:
@@ -1521,6 +1536,20 @@ static void arrange_output(struct sway_output *output) {
 		} else {
 			wlr_scene_node_set_enabled(&child->layers.tiling->node, false);
 			wlr_scene_node_set_enabled(&child->layers.fullscreen->node, false);
+
+			struct sway_transaction *transaction = server.queued_transaction;
+			if (transaction && list_find(transaction->workspaces, child) != -1) {
+				if (tiling) {
+					struct wlr_box *area = workspace_get_output_usable_area(child);
+					struct side_gaps *gaps = &child->current_gaps;
+					arrange_workspace_tiling(child,
+						area->width - gaps->left - gaps->right,
+						area->height - gaps->top - gaps->bottom);
+				}
+				if (floating) {
+					arrange_workspace_floating(child);
+				}
+			}
 
 			disable_workspace(child);
 		}
