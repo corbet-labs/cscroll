@@ -829,6 +829,7 @@ static void workspace_switch_callback_end(void *callback_data) {
 	for (int i = 0; i < data->from_containers->length; ++i) {
 		struct workspace_switch_container_data *cdata = data->from_containers->items[i];
 		cdata->container->pending.y = cdata->y;
+		cdata->container->current.y = cdata->y;
 		node_set_dirty(&cdata->container->node);
 	}
 	for (int i = 0; i < data->to_containers->length; ++i) {
