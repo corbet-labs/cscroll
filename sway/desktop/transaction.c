@@ -1344,6 +1344,95 @@ static void arrange_workspace_tiling(struct sway_workspace *ws,
 	}
 }
 
+static void workspace_arrange_container_save_data(struct sway_container *con) {
+	con->arrange_data.x = con->current.x;
+	con->arrange_data.y = con->current.y;
+	con->arrange_data.width = con->current.width;
+	con->arrange_data.height = con->current.height;
+}
+
+static void workspace_arrange_container_restore_data(struct sway_container *con) {
+	con->current.x = con->arrange_data.x;
+	con->current.y = con->arrange_data.y;
+	con->current.width = con->arrange_data.width;
+	con->current.height = con->arrange_data.height;
+}
+
+// Sync the current state of a container with its pending state, the same
+// way a transaction commit does (apply_container_state()), so the
+// arrangement uses the final sizes and tree.
+static void workspace_arrange_container_apply_data(struct sway_seat *seat,
+		struct sway_container *con) {
+	con->current.x = con->pending.x;
+	con->current.y = con->pending.y;
+	con->current.width = con->pending.width;
+	con->current.height = con->pending.height;
+	con->current.layout = con->pending.layout;
+	if (con->view) {
+		return;
+	}
+	list_free(con->current.children);
+	con->current.children = create_list();
+	list_cat(con->current.children, con->pending.children);
+	struct sway_node *focus =
+		seat_get_active_tiling_child(seat, &con->node);
+	con->current.focused_inactive_child = focus ? focus->sway_container : NULL;
+}
+
+static void workspace_arrange_container_apply(struct sway_seat *seat,
+		struct sway_container *con) {
+	workspace_arrange_container_save_data(con);
+	workspace_arrange_container_apply_data(seat, con);
+	if (!con->view) {
+		for (int i = 0; i < con->pending.children->length; ++i) {
+			struct sway_container *child = con->pending.children->items[i];
+			workspace_arrange_container_save_data(child);
+			workspace_arrange_container_apply(seat, child);
+		}
+	}
+}
+
+static void workspace_arrange_container_restore(struct sway_seat *seat,
+		struct sway_container *con) {
+	workspace_arrange_container_restore_data(con);
+	if (!con->view) {
+		for (int i = 0; i < con->pending.children->length; ++i) {
+			struct sway_container *child = con->pending.children->items[i];
+			workspace_arrange_container_restore(seat, child);
+		}
+	}
+}
+
+void transaction_workspace_arrange(struct sway_workspace *ws) {
+	if (!ws || !ws->output || ws->node.destroying || ws->fullscreen) {
+		return;
+	}
+	struct sway_seat *seat = input_manager_current_seat();
+	for (int i = 0; i < ws->tiling->length; ++i) {
+		workspace_arrange_container_apply(seat, ws->tiling->items[i]);
+	}
+	for (int i = 0; i < ws->floating->length; ++i) {
+		workspace_arrange_container_apply(seat, ws->floating->items[i]);
+	}
+
+	struct sway_container *active =
+		seat_get_focus_inactive_tiling(seat, ws);
+	if (active) {
+		while (active->pending.parent) {
+			active = active->pending.parent;
+		}
+	}
+	arrange_children(ws, layout_get_type(ws), ws->tiling, active,
+		ws->layers.tiling, ws->gaps_inner);
+
+	for (int i = 0; i < ws->tiling->length; ++i) {
+		workspace_arrange_container_restore(seat, ws->tiling->items[i]);
+	}
+	for (int i = 0; i < ws->floating->length; ++i) {
+		workspace_arrange_container_restore(seat, ws->floating->items[i]);
+	}
+}
+
 static void animate_workspace_tiling(struct sway_workspace *ws) {
 	if (ws->tiling->length == 0) {
 		return;

@@ -1076,6 +1076,13 @@ static void animate_workspace_switch(struct sway_output *output,
 	animation_end();
 	animation_set_type(ANIMATION_WORKSPACE_SWITCH);
 
+	// Make sure container positions are re-arranged in case there are
+	// several commands happening in the workspace_switch transaction.
+	transaction_workspace_arrange(to);
+	if (data->from) {
+		transaction_workspace_arrange(data->from);
+	}
+
 	double min_y_to = to->y, max_y_to = to->y + to->height;
 	if (root->filters->workspace_tiling_filter(to, root->filters->workspace_tiling_filter_data)) {
 		select_visible_containers(data->to_containers, to, to->tiling, &min_y_to, &max_y_to);

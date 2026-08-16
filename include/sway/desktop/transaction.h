@@ -24,6 +24,7 @@
 struct sway_transaction;
 struct sway_transaction_instruction;
 struct sway_view;
+struct sway_workspace;
 
 /**
  * Find all dirty containers, create and commit a transaction containing them,
@@ -88,5 +89,19 @@ void config_default_animation_callbacks();
  * Destroy transaction
  */
 void transaction_destroy(struct sway_transaction *transaction);
+
+/**
+ * Re-arrange the pending positions of a workspace's tiling containers.
+ *
+ * Container positions are assigned when a transaction is committed. When
+ * the workspace has uncommitted changes (e.g. a container was moved to it
+ * within the same transaction), the pending positions of the affected
+ * containers are still stale. This function brings the workspace's pending
+ * state (sizes and positions) up to date synchronously, without committing
+ * a transaction. It is used to compute animations that depend on the final
+ * positions (e.g. the workspace switch animation) when the layout changed
+ * within the same transaction.
+ */
+void transaction_workspace_arrange(struct sway_workspace *workspace);
 
 #endif
