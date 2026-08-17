@@ -1108,6 +1108,7 @@ static void animate_view(struct sway_container *con,
 		con->animation.at = linear_scale(con->animation.a0, con->animation.a1, t);
 		const float old_alpha =con->pending.alpha;
 		con->pending.alpha = con->animation.at;
+		output_configure_scene(NULL, &con->scene_tree->node, con->pending.alpha);
 		container_update(con);
 		con->pending.alpha = old_alpha;
 	}
