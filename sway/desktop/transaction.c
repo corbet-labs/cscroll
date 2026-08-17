@@ -2037,6 +2037,17 @@ void config_default_animation_callbacks() {
 
 static void transaction_commit_pending(void);
 
+static bool transaction_has_server_request(struct sway_transaction *transaction) {
+	for (int i = 0; i < transaction->instructions->length; ++i) {
+		struct sway_transaction_instruction *instruction =
+			transaction->instructions->items[i];
+		if (instruction->server_request) {
+			return true;
+		}
+	}
+	return false;
+}
+
 static void transaction_progress(void) {
 	if (!server.queued_transaction) {
 		return;
@@ -2059,8 +2070,12 @@ static void transaction_progress(void) {
 	}
 	server.queued_transaction = NULL;
 	animation_config->enabled = animation_enabled;
-
-	if (!server.pending_transaction) {
+	// If we are animating, pending transactions that only contain client-side
+	// changes must not be committed now, or the animation would stop. 
+	bool defer_pending_transaction = server.pending_transaction &&
+		animation_animating() &&
+		!transaction_has_server_request(server.pending_transaction);
+	if (!server.pending_transaction || defer_pending_transaction) {
 		struct sway_seat *seat = input_manager_get_default_seat();
 		struct sway_node *node = seat_get_focus(seat);
 		if (node && node->type == N_CONTAINER) {
