@@ -868,7 +868,7 @@ int main(int argc, char **argv) {
 
 	static const struct option long_options[] = {
 		{"help", no_argument, NULL, 'h'},
-		{"lua_repl", no_argument, NULL, 'i'},
+		{"lua_repl", no_argument, NULL, 'l'},
 		{"monitor", no_argument, NULL, 'm'},
 		{"pretty", no_argument, NULL, 'p'},
 		{"quiet", no_argument, NULL, 'q'},
