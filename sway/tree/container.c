@@ -1345,7 +1345,12 @@ static struct sway_workspace *container_floating_find_workspace(struct sway_outp
 		double x_dist = closest_x - center_x;
 		double y_dist = closest_y - center_y;
 		double distance = x_dist * x_dist + y_dist * y_dist;
-		if (distance < closest_distance) {
+		// Prefer the current workspace on an exact center-distance tie,
+		// else the first equal-distance workspace in sorted order wins
+		// and the window jumps to an unrelated, lower-ordered workspace.
+		if (distance < closest_distance ||
+				(distance == closest_distance &&
+				 workspace == con->pending.workspace)) {
 			closest_workspace = workspace;
 			closest_distance = distance;
 		}
