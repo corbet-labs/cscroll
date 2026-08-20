@@ -109,11 +109,16 @@ static void create_lookup_length(struct bezier_curve *curve) {
 	double len0 = 0.0, len1 = 0.0;
 	double u0 = 0.0;
 	for (int i = 0; i < NINTERVALS + 1; ++i) {
-		double t = i * length / NINTERVALS;
+		double t = MIN((double) i / NINTERVALS * length, length);
 		while (t > len1) {
 			len0 = len1;
 			u0 = (double) last / NINTERVALS;
-			len1 += T[++last];
+			++last;
+			if (last < NINTERVALS) {
+				len1 += T[last];
+			} else {
+				len1 = length;
+			}
 		}
 		// Interpolate
 		if (last == 0) {
@@ -861,6 +866,11 @@ void animation_get_fade(enum sway_animation_fade fade, double *t) {
 	double u = animation->time;
 	double x, y;
 	animation_curve_get_values(curve, u, t, &x, &y);
+	if (*t < 0.0) {
+		*t = 0.0;
+	} else if (*t > 1.0) {
+		*t = 1.0;
+	}
 }
 
 static void create_bezier(struct bezier_curve *curve, uint32_t order, list_t *points,
