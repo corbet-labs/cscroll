@@ -1,6 +1,7 @@
 #include "sway/tree/focus_ring.h"
 #include "sway/input/seat.h"
 #include "sway/log.h"
+#include "util.h"
 
 struct sway_focus_ring *focus_ring_create() {
 	struct sway_focus_ring *focus_ring = calloc(1, sizeof(struct sway_focus_ring));
@@ -55,7 +56,7 @@ void focus_ring_prev(struct sway_focus_ring *focus_ring,
 	int index = focus_ring->index - 1;
 	int len = config->focus_ring_length > 0 ? config->focus_ring_length :
 		focus_ring->ring->length;
-	if (index >= MAX(focus_ring->ring->length - len, 0)) {
+	if (index >= max(focus_ring->ring->length - len, 0)) {
 		struct sway_view *view = focus_ring->ring->items[index];
 		focus_container(seat, view->container);
 		focus_ring->index--;
@@ -69,7 +70,7 @@ void focus_ring_first(struct sway_focus_ring *focus_ring,
 	}
 	int len = config->focus_ring_length > 0 ? config->focus_ring_length :
 		focus_ring->ring->length;
-	focus_ring->index = MAX(focus_ring->ring->length - len, 0);
+	focus_ring->index = max(focus_ring->ring->length - len, 0);
 	struct sway_view *view = focus_ring->ring->items[focus_ring->index];
 	focus_container(seat, view->container);
 }

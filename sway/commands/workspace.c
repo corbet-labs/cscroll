@@ -1,5 +1,6 @@
 #include <ctype.h>
 #include <limits.h>
+#include <math.h>
 #include <string.h>
 #include <strings.h>
 #include "sway/commands.h"
@@ -317,7 +318,7 @@ struct cmd_results *cmd_workspace(int argc, char **argv) {
 				if (*end) {
 					return cmd_results_new(CMD_INVALID, "%s", expected);
 				}
-				fraction = MIN(MAX(0.1, fraction), 0.9);
+				fraction = fmin(fmax(0.1, fraction), 0.9);
 				if (argc > 3) {
 					gap = strtol(argv[3], &end, 10);
 					if (*end) {

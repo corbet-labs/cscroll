@@ -1,4 +1,5 @@
 #include <assert.h>
+#include <math.h>
 #include <stdlib.h>
 #include <wlr/types/wlr_alpha_modifier_v1.h>
 #include <wlr/types/wlr_color_management_v1.h>
@@ -235,9 +236,6 @@ static void scene_buffer_unmark_client_buffer(struct wlr_scene_buffer *scene_buf
 	}
 }
 
-#define MAX(a,b) ((a) > (b) ? (a) : (b))
-#define MIN(a,b) ((a) < (b) ? (a) : (b))
-
 static int min(int a, int b) {
 	return a < b ? a : b;
 }
@@ -270,10 +268,10 @@ static void scene_surface_get_sizes(struct wlr_scene_surface *scene_surface, str
 		src_box->y += (clip->y * src_box->height) / state->height;
 		src_box->width *= (double)*width / state->width;
 		src_box->height *= (double)*height / state->height;
-		src_box->x = MIN(MAX(0.0, round(src_box->x)), buffer_width - 1);
-		src_box->y = MIN(MAX(0.0, round(src_box->y)), buffer_height - 1);
-		src_box->width = MIN(round(src_box->width), buffer_width - src_box->x);
-		src_box->height = MIN(round(src_box->height), buffer_height - src_box->y);
+		src_box->x = fmin(fmax(0.0, round(src_box->x)), buffer_width - 1);
+		src_box->y = fmin(fmax(0.0, round(src_box->y)), buffer_height - 1);
+		src_box->width = fmin(round(src_box->width), buffer_width - src_box->x);
+		src_box->height = fmin(round(src_box->height), buffer_height - src_box->y);
 
 		wlr_fbox_transform(src_box, src_box, wlr_output_transform_invert(state->transform),
 			buffer_width, buffer_height);
@@ -304,8 +302,8 @@ void wlr_scene_surface_resize(struct wlr_scene_surface *scene_surface,
 	double dst_height = height * view_data.total_scale * view_data.hscale;
 	wlr_scene_buffer_set_opaque_region(scene_buffer, &opaque);
 	wlr_scene_buffer_set_source_box(scene_buffer, &src_box);
-	wlr_scene_buffer_set_dest_size(scene_buffer, MAX(1, dst_width),
-		MAX(1, dst_height));
+	wlr_scene_buffer_set_dest_size(scene_buffer, fmax(1.0, dst_width),
+		fmax(1.0, dst_height));
 	wlr_scene_buffer_set_radius(scene_buffer, radius_top, radius_bottom);
 	pixman_region32_fini(&opaque);
 }
@@ -364,8 +362,8 @@ static void surface_reconfigure(struct wlr_scene_surface *scene_surface) {
 	double dst_height = height * view_data.total_scale * view_data.hscale;
 	wlr_scene_buffer_set_opaque_region(scene_buffer, &opaque);
 	wlr_scene_buffer_set_source_box(scene_buffer, &src_box);
-	wlr_scene_buffer_set_dest_size(scene_buffer, MAX(1, dst_width),
-		MAX(1, dst_height));
+	wlr_scene_buffer_set_dest_size(scene_buffer, fmax(1.0, dst_width),
+		fmax(1.0, dst_height));
 	wlr_scene_buffer_set_radius(scene_buffer, view_data.radius_top, view_data.radius_bottom);
 	wlr_scene_buffer_set_transform(scene_buffer, state->transform);
 	wlr_scene_buffer_set_opacity(scene_buffer, opacity);

@@ -1,4 +1,5 @@
 #include <assert.h>
+#include <math.h>
 #include <stdlib.h>
 #include <string.h>
 #include <wlr/backend.h>
@@ -32,8 +33,6 @@
 
 #define DMABUF_FEEDBACK_DEBOUNCE_FRAMES  30
 #define HIGHLIGHT_DAMAGE_FADEOUT_TIME   250
-
-#define MAX(a, b)  (((a) > (b)) ? (a) : (b))
 
 struct wlr_scene_tree *wlr_scene_tree_from_node(struct wlr_scene_node *node) {
 	assert(node->type == WLR_SCENE_NODE_TREE);
@@ -2089,7 +2088,7 @@ static void scene_entry_render(struct render_list_entry *entry, const struct ren
 			.object = object,
 			.border = scene_decoration->border,
 			.border_radius = round(scene_decoration->border_radius * data->scale * scale),
-			.border_width = MAX(1.0, round(scene_decoration->border_width * data->scale * scale)),
+			.border_width = fmax(1.0, round(scene_decoration->border_width * data->scale * scale)),
 			.border_top_color = {
 				.r = scene_decoration->border_top_color[0],
 				.g = scene_decoration->border_top_color[1],

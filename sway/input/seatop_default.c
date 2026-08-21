@@ -1,5 +1,6 @@
 #include <float.h>
 #include <libevdev/libevdev.h>
+#include <math.h>
 #include <wlr/types/wlr_cursor.h>
 #include <wlr/types/wlr_subcompositor.h>
 #include <wlr/types/wlr_tablet_v2.h>
@@ -66,7 +67,7 @@ static enum wlr_edges find_edge(struct sway_container *cont,
 	}
 	enum wlr_edges edge = 0;
 	const double border_thickness = cont->pending.border_thickness > 0 ?
-		MAX(1.0, scale * cont->pending.border_thickness) : 0.0;
+		fmax(1.0, scale * cont->pending.border_thickness) : 0.0;
 	if (cont->pending.border_left && cx < x + border_thickness) {
 		edge |= WLR_EDGE_LEFT;
 	}

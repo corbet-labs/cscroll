@@ -1,6 +1,7 @@
 #include <strings.h>
 #include "sway/commands.h"
 #include "sway/config.h"
+#include "util.h"
 
 struct cmd_results *output_cmd_scale(int argc, char **argv) {
 	if (!config->handler_context.output_config) {
@@ -17,7 +18,7 @@ struct cmd_results *output_cmd_scale(int argc, char **argv) {
 	}
 
 	int nargs = 1;
-	int nargc = MIN(nargs + 2, argc);
+	int nargc = min(nargs + 2, argc);
 	if (argc > 1) {
 		for (int i = nargs; i < nargc; ++i) {
 			if (strcasecmp(argv[i], "force") == 0) {

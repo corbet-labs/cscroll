@@ -1,5 +1,6 @@
 #include <assert.h>
 #include <drm_fourcc.h>
+#include <math.h>
 #include <stdint.h>
 #include <stdlib.h>
 #include <wayland-server-core.h>
@@ -360,11 +361,11 @@ void container_arrange_title_bar(struct sway_container *con) {
 			h_padding = width - config->titlebar_h_padding - marks_buffer_width;
 		}
 
-		h_padding = MAX(h_padding, config->titlebar_h_padding);
+		h_padding = fmax(h_padding, config->titlebar_h_padding);
 
-		double alloc_width = MIN(node->width,
+		double alloc_width = fmin(node->width,
 			width - h_padding - config->titlebar_h_padding);
-		alloc_width = MAX(alloc_width, 0);
+		alloc_width = fmax(alloc_width, 0.0);
 
 		sway_text_node_set_max_width(node, round(alloc_width));
 		wlr_scene_node_set_position(node->node,
@@ -384,11 +385,11 @@ void container_arrange_title_bar(struct sway_container *con) {
 			h_padding = config->titlebar_h_padding;
 		}
 
-		h_padding = MAX(h_padding, config->titlebar_h_padding);
+		h_padding = fmax(h_padding, config->titlebar_h_padding);
 
-		double alloc_width = MIN(node->width,
+		double alloc_width = fmin(node->width,
 			width - h_padding - config->titlebar_h_padding);
-		alloc_width = MAX(alloc_width, 0);
+		alloc_width = fmax(alloc_width, 0.0);
 
 		sway_text_node_set_max_width(node, round(alloc_width));
 		wlr_scene_node_set_position(node->node,
@@ -1422,7 +1423,7 @@ void container_floating_move_to(struct sway_container *con,
 	} else if (!root->jumping) {
 		// Always keep some part of the floating window inside the workspace
 		struct sway_output *output = new_workspace->output;
-		const double MARGIN = MIN(output->width * 0.025, output->height * 0.025);
+		const double MARGIN = fmin(output->width * 0.025, output->height * 0.025);
 		const double dxmax = con->pending.x - (output->lx + output->width - MARGIN);
 		const double dymax = con->pending.y - (output->ly + output->height - MARGIN);
 		const double dxmin = con->pending.x + con->pending.width - (output->lx + MARGIN);

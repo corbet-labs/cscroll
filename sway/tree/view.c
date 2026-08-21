@@ -1,3 +1,4 @@
+#include <math.h>
 #include <stdlib.h>
 #include <strings.h>
 #include <wayland-server-core.h>
@@ -1613,11 +1614,11 @@ static void view_get_animation_sizes(struct sway_view *view, double *wt, double 
 	int border_horiz, border_vert;
 	container_get_borders(con, &border_horiz, &border_vert);
 	if (animation_enabled()) {
-		*wt = MAX(con->animation.wt - border_horiz, 0.0);
-		*ht = MAX(con->animation.ht - border_vert, 0.0);
+		*wt = fmax(con->animation.wt - border_horiz, 0.0);
+		*ht = fmax(con->animation.ht - border_vert, 0.0);
 	} else {
-		*wt = MAX(con->animation.w1 - border_horiz, 0.0);
-		*ht = MAX(con->animation.h1 - border_vert, 0.0);
+		*wt = fmax(con->animation.w1 - border_horiz, 0.0);
+		*ht = fmax(con->animation.h1 - border_vert, 0.0);
 	}
 }
 
@@ -1660,8 +1661,8 @@ static void clip_view(struct sway_view *view) {
 		struct wlr_box clip = {
 			.x = view->geometry.x,
 			.y = view->geometry.y,
-			.width = MAX(1, round(wt / content_scale)),
-			.height = MAX(1, round(ht / content_scale))
+			.width = (int) fmax(1.0, round(wt / content_scale)),
+			.height = (int) fmax(1.0, round(ht / content_scale))
 		};
 		wlr_scene_subsurface_tree_set_clip(&view->content_tree->node, &clip);
 	} else {

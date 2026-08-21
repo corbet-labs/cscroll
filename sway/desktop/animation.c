@@ -1,3 +1,4 @@
+#include <math.h>
 #include "sway/desktop/animation.h"
 #include "sway/server.h"
 #include "sway/log.h"
@@ -109,7 +110,7 @@ static void create_lookup_length(struct bezier_curve *curve) {
 	double len0 = 0.0, len1 = 0.0;
 	double u0 = 0.0;
 	for (int i = 0; i < NINTERVALS + 1; ++i) {
-		double t = MIN((double) i / NINTERVALS * length, length);
+		double t = fmin((double) i / NINTERVALS * length, length);
 		while (t > len1) {
 			len0 = len1;
 			u0 = (double) last / NINTERVALS;

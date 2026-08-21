@@ -1,3 +1,4 @@
+#include <math.h>
 #include <wlr/types/wlr_cursor.h>
 #include <wlr/util/edges.h>
 #include "sway/commands.h"
@@ -145,8 +146,8 @@ void seatop_begin_resize_tiling(struct sway_seat *seat,
 		struct sway_workspace *workspace = e->con->pending.workspace;
 		if (workspace) {
 			const int gaps = workspace->gaps_inner * 2;
-			e->max_width = MIN(e->max_width, workspace->width - gaps);
-			e->max_height = MIN(e->max_height, workspace->height - gaps);
+			e->max_width = fmin(e->max_width, workspace->width - gaps);
+			e->max_height = fmin(e->max_height, workspace->height - gaps);
 		}
 	}
 

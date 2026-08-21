@@ -9,6 +9,7 @@
 #include "pango.h"
 #include "sway/config.h"
 #include "sway/sway_text_node.h"
+#include "util.h"
 
 struct cairo_buffer {
 	struct wlr_buffer base;
@@ -60,9 +61,9 @@ struct text_buffer {
 static int get_text_width(struct sway_text_node *props) {
 	int width = props->width;
 	if (props->max_width >= 0) {
-		width = MIN(width, props->max_width);
+		width = min(width, props->max_width);
 	}
-	return MAX(width, 0);
+	return max(width, 0);
 }
 
 static void render_backing_buffer(struct text_buffer *buffer) {

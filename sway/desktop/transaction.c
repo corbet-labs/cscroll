@@ -1,3 +1,4 @@
+#include <math.h>
 #include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
@@ -967,7 +968,7 @@ static void animate_view(struct sway_container *con,
 	}
 	double border_top = container_titlebar_height() * scale;
 	double border_width = con->current.border_thickness > 0 ?
-		MAX(1, con->current.border_thickness * scale) : 0.0;
+		fmax(1.0, con->current.border_thickness * scale) : 0.0;
 
 	if (title_bar && con->current.border != B_NORMAL) {
 		wlr_scene_node_set_enabled(&con->title_bar.tree->node, false);
