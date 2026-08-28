@@ -286,7 +286,8 @@ static void handle_surface_commit(struct wl_listener *listener, void *data) {
 			animation_set_type(ANIMATION_LAYER_SHELL);
 		}
 		arrange_layers(surface->output);
-		if (committed != (committed & WLR_LAYER_SURFACE_V1_STATE_KEYBOARD_INTERACTIVITY)) {
+		if (committed != (committed & WLR_LAYER_SURFACE_V1_STATE_KEYBOARD_INTERACTIVITY) ||
+			server.dirty_nodes->length > 0) {
 			transaction_commit_dirty();
 		}
 		cursor_rebase_all();

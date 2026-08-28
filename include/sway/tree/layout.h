@@ -34,11 +34,6 @@ enum sway_layout_fit_group {
 	FIT_TOBEG,
 };
 
-enum sway_layout_admit_direction {
-	ADMIT_LEFT,
-	ADMIT_RIGHT
-};
-
 enum sway_layout_insert {
 	INSERT_BEFORE,
 	INSERT_AFTER,
