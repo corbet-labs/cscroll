@@ -7,8 +7,9 @@ configured `upstream` remote is:
 git@github.com:dawsers/scroll.git
 ```
 
-The downstream started at Scroll `1.12.21`, commit `f80c5820`. The local
-downstream branch is `main`; upstream keeps the name `master`.
+The downstream started at Scroll `1.12.21`, commit `f80c5820`. It was last
+synchronized to upstream commit `66d0e9d0` (2026-08-28). The local downstream
+branch is `main`; upstream keeps the name `master`.
 
 ## Downstream ledger
 
