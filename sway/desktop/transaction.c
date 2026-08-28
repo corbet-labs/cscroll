@@ -33,6 +33,11 @@ struct sway_transaction {
 	size_t num_configures;
 	struct timespec commit_time;
 	bool disable_animations;
+	// Nested commands or intermediate calls to transaction_commit_dirty() may
+	// have their transaction delayed if an animation is running and
+	// server.delay_transaction is true. Note that here, so the transaction
+	// flushes afterwards whenever a new transaction is committed..
+	bool delayed_server_request;
 };
 
 struct sway_transaction_instruction {
@@ -2448,7 +2453,13 @@ static void overview_recompute_scales() {
 
 static void _transaction_commit_dirty(bool server_request, bool delayed,
 		bool disable_animations) {
-	if (!server.dirty_nodes->length) {
+	// flush_delayed verifies whether we need to commit a delayed server request
+	// even when there are no new dirty nodes.
+	bool flush_delayed = server_request && !delayed &&
+		server.pending_transaction &&
+		server.pending_transaction->delayed_server_request;
+
+	if (!server.dirty_nodes->length && !flush_delayed) {
 		return;
 	}
 
@@ -2470,6 +2481,9 @@ static void _transaction_commit_dirty(bool server_request, bool delayed,
 	server.dirty_nodes->length = 0;
 
 	if ((delayed || server.delay_transaction) && animation_animating()) {
+		if (server_request && !delayed) {
+			server.pending_transaction->delayed_server_request = true;
+		}
 		return;
 	}
 
