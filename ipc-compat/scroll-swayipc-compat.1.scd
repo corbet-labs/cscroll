@@ -6,7 +6,7 @@ scroll-swayipc-compat - expose scroll IPC to strict Sway-schema clients
 
 # SYNOPSIS
 
-*scroll-swayipc-compat* [*--upstream* _SOCKET_]... [_LISTEN_SOCKET_]
+*scroll-swayipc-compat* [*--upstream* _SOCKET_]... [*--favorite* _WORKSPACE_]... [_LISTEN_SOCKET_]
 
 # DESCRIPTION
 
@@ -15,8 +15,12 @@ the i3/Sway IPC protocol but strictly deserialize Sway's layout enum. In
 compositor-to-client messages it maps scroll's _horizontal_ layout to _splith_
 and _vertical_ to _splitv_. Frame lengths are recomputed after translation.
 
-No other payload data is changed. In particular, the proxy does not create
-workspaces, rewrite workspace IDs, suppress events, or retain favourites.
+With one or more *--favorite* values, the proxy also exposes those numbered
+workspaces to strict workspace clients before the workspaces exist. It gives
+numbered workspaces stable IDs matching their numbers, creates inactive entries
+for absent favourites, and suppresses the empty event that would otherwise
+remove a favourite immediately after it is left. This policy is disabled when
+no favourites are configured.
 
 Client-to-compositor messages pass through unchanged. Point strict clients at
 the proxy through _SWAYSOCK_ and ensure _SCROLLSOCK_ and _I3SOCK_ do not bypass
@@ -38,6 +42,16 @@ proxy. Candidates are tried in this order:
   _$XDG_RUNTIME_DIR_.
 
 The listen socket itself is always excluded.
+
+# OPTIONS
+
+*--favorite* _WORKSPACE_
+	Retain a positive numbered workspace for strict workspace clients. May be
+	repeated. Duplicate values are ignored.
+
+*--upstream* _SOCKET_
+	Try an explicit Scroll IPC socket before environment and runtime discovery.
+	May be repeated.
 
 # SYSTEMD
 
