@@ -34,7 +34,8 @@ proxy. Candidates are tried in this order:
 
 . Explicit *--upstream* arguments, in command-line order.
 . _SCROLL_REAL_SOCK_, _SCROLLSOCK_, _SWAYSOCK_, and _I3SOCK_.
-. Newest-first _scroll-ipc.*.sock_ entries under _$XDG_RUNTIME_DIR_.
+. Newest-first entries whose names begin scroll-ipc. and end .sock under
+  _$XDG_RUNTIME_DIR_.
 
 The listen socket itself is always excluded.
 
