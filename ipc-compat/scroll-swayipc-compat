@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-"""Expose Scroll IPC to clients that strictly deserialize Sway layout names.
+# SPDX-License-Identifier: MIT
+"""Expose scroll IPC to clients that strictly deserialize Sway layout names.
 
 Only the two lossless schema aliases are translated, and only in the
 compositor-to-client direction:
@@ -33,7 +34,7 @@ LAYOUT_ALIASES = (
 
 
 def rewrite_layouts(payload: bytes) -> bytes:
-    """Translate Scroll-only layout values into their Sway schema aliases."""
+    """Translate scroll-only layout values into their Sway schema aliases."""
     for pattern, replacement in LAYOUT_ALIASES:
         payload = pattern.sub(replacement, payload)
     return payload
@@ -80,7 +81,7 @@ async def pump(
 def upstream_candidates(listen: str, explicit: tuple[str, ...] = ()) -> list[str]:
     """Return upstream paths in priority order, excluding the proxy itself.
 
-    Candidates are resolved for every client connection. Scroll's socket name
+    Candidates are resolved for every client connection. scroll's socket name
     contains its PID, so caching a path would break after a compositor restart.
     """
     candidates: list[str] = []
@@ -180,7 +181,7 @@ def remove_stale_socket(path: str) -> None:
 
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="proxy Scroll IPC for strict Sway-schema clients"
+        description="proxy scroll IPC for strict Sway-schema clients"
     )
     parser.add_argument(
         "listen",
@@ -192,7 +193,7 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         action="append",
         default=[],
         metavar="SOCKET",
-        help="explicit Scroll socket; may be repeated and is tried before the environment",
+        help="explicit scroll socket; may be repeated and is tried before the environment",
     )
     return parser.parse_args(argv)
 

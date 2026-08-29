@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: MIT
 import asyncio
 import importlib.machinery
 import importlib.util

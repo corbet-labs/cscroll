@@ -226,6 +226,11 @@ install_data(
 )
 
 install_data(
+	'resources/scroll-portals.conf',
+	install_dir: join_paths(datadir, 'xdg-desktop-portal')
+)
+
+install_data(
 	'scroll.png',
 	install_dir: join_paths(datadir, 'icons')
 )

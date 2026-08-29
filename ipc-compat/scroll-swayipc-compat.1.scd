@@ -2,7 +2,7 @@ scroll-swayipc-compat(1)
 
 # NAME
 
-scroll-swayipc-compat - expose Scroll IPC to strict Sway-schema clients
+scroll-swayipc-compat - expose scroll IPC to strict Sway-schema clients
 
 # SYNOPSIS
 
@@ -12,7 +12,7 @@ scroll-swayipc-compat - expose Scroll IPC to strict Sway-schema clients
 
 *scroll-swayipc-compat* is a temporary Unix-socket proxy for clients that speak
 the i3/Sway IPC protocol but strictly deserialize Sway's layout enum. In
-compositor-to-client messages it maps Scroll's _horizontal_ layout to _splith_
+compositor-to-client messages it maps scroll's _horizontal_ layout to _splith_
 and _vertical_ to _splitv_. Frame lengths are recomputed after translation.
 
 No other payload data is changed. In particular, the proxy does not create
@@ -28,7 +28,7 @@ or a socket that is accepting connections.
 
 # UPSTREAM SOCKET DISCOVERY
 
-Each new client connection resolves the upstream again, so a restarted Scroll
+Each new client connection resolves the upstream again, so a restarted scroll
 instance with a new PID-specific socket can be used without restarting the
 proxy. Candidates are tried in this order:
 
