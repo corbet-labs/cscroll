@@ -1,3 +1,5 @@
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+
 # Upstream relationship
 
 `cscroll` preserves scroll's history and follows its `master` branch. The

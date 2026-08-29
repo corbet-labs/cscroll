@@ -2,7 +2,7 @@ project(
 	'scroll',
 	'c',
 	version: '1.13-dev',
-	license: 'MIT',
+	license: ['MIT', 'Apache-2.0'],
 	meson_version: '>=1.3',
 	default_options: [
 		'c_std=c11',

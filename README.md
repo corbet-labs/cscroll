@@ -33,9 +33,11 @@ See [UPSTREAM.md](UPSTREAM.md) for the downstream ledger and sync procedure.
 
 ## License
 
-`cscroll` preserves `scroll` and `sway`'s MIT license, copyright notice,
-upstream history, and contributor authorship. The bundled wlroots source keeps
-its own MIT license at `subprojects/wlroots/LICENSE`. See [LICENSE](LICENSE).
+`cscroll` is not relicensed wholesale. Code inherited from `scroll`, `sway`,
+and the bundled wlroots source retains its MIT license, notices, history, and
+authorship. Independently authored downstream files use Apache-2.0. See
+[LICENSING.md](LICENSING.md) for the file boundary and contribution rule,
+[LICENSE](LICENSE) for MIT, and [LICENSE-APACHE](LICENSE-APACHE) for Apache-2.0.
 
 ## Upstream scroll documentation
 

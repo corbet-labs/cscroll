@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: MIT
+# SPDX-License-Identifier: Apache-2.0
 # Canonical runtime bundle. Packaging integrations map these components to the
 # native package manager and install every required entry with cscroll.
 schema = 1

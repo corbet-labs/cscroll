@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# SPDX-License-Identifier: MIT
+# SPDX-License-Identifier: Apache-2.0
 """Expose scroll IPC to clients that strictly deserialize Sway layout names.
 
 Only the two lossless schema aliases are translated, and only in the
